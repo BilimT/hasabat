@@ -1657,6 +1657,12 @@ if page == "Kwota":
                 labels={group_by: "Category", "Kwota": "Value"},
                 height=600
             )
+             # Update layout to change font style and size
+            fig_pie.update_layout(
+                title_font=dict(family="Times New Roman", size=24),  # Title font style and size
+                legend_font=dict(family="Times New Roman", size=24),  # Legend font style and size
+                font=dict(family="Times New Roman", size=30),  # General font style and size
+            )
 
             # Display in Streamlit
             st.plotly_chart(fig_pie)
