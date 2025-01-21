@@ -632,6 +632,9 @@ if page == "Hyzmatdaşlyklar":
             height=600
         )
 
+
+
+
         # Display in Streamlit
         st.plotly_chart(fig_pie)
 
@@ -2507,6 +2510,45 @@ if page == "Bazar":
         # Filter data for JEMI Ugur
         jemi_data = pivot_data[pivot_data["Ugur"] == "Jemi"]
 
+        filtered_pivot_data = pivot_data[pivot_data["Ugur"] != "Jemi"]
+
+        # Calculate the total workers from the filtered data
+        total_workers_filtered = filtered_pivot_data["Işgärleriň sany"].sum()
+
+        # Calculate percentage distribution for each sector
+        filtered_pivot_data["Percentage"] = (
+            filtered_pivot_data["Işgärleriň sany"] / total_workers_filtered
+        ) * 100
+
+        # Sort `Ugur` by numerical prefixes
+        filtered_pivot_data["Sort_Key"] = (
+            filtered_pivot_data["Ugur"]
+            .str.extract(r"^(\d+)")  # Extract the number at the beginning
+            .astype(float)           # Convert to numeric for sorting
+        )
+        filtered_pivot_data = filtered_pivot_data.sort_values("Sort_Key").drop(columns=["Sort_Key"])
+
+        # Visualization: Pie Chart for Workers Distribution Across Sectors
+        st.write("### Ugurlar boýunça işgärleriň paýlanyşy")
+        if not filtered_pivot_data.empty:
+            fig_pie_filtered = px.pie(
+                filtered_pivot_data,
+                names="Ugur",
+                values="Percentage",
+                title="Ugurlar boýunça işgärleriň paýlanyşy",
+                labels={"Ugur": "Sector", "Percentage": "Percentage (%)"},
+                height=600
+            )
+
+            fig_pie_filtered.update_layout(
+                title_font=dict(family="Times New Roman", size=24),  # Title font style and size
+                legend_font=dict(family="Times New Roman", size=24),  # Legend font style and size
+                font=dict(family="Times New Roman", size=22),  # General font style and size
+            )
+            st.plotly_chart(fig_pie_filtered)
+        else:
+            st.write("No data available for the selected criteria.")
+
         # Visualization 1: Overall Distribution (JEMI)
         st.write("### Ý.B. Işgärleriň paýlanyşy")
         if not jemi_data.empty:
@@ -2525,6 +2567,13 @@ if page == "Bazar":
                 labels={"Category": "Category", "Value": "Value"},
                 height=600
             )
+
+            fig_pie1.update_layout(
+                title_font=dict(family="Times New Roman", size=24),  # Title font style and size
+                legend_font=dict(family="Times New Roman", size=24),  # Legend font style and size
+                font=dict(family="Times New Roman", size=22),  # General font style and size
+            )
+            
             st.plotly_chart(fig_pie1)
         else:
             st.write("No data available for the selected criteria.")
@@ -2532,7 +2581,23 @@ if page == "Bazar":
         # --- Detailed Ugur Breakdown ---
         # Filter data for higher-educated workers
 
-        filtered_pivot_data = pivot_data[pivot_data["Ugur"] != "Jemi"]  # Exclude "Jemi" for sector-wise analysis
+        # Exclude "Jemi" for sector-wise analysis
+        filtered_pivot_data = pivot_data[pivot_data["Ugur"] != "Jemi"]
+
+        # Extract numerical prefix from the Ugur column and sort by it
+        filtered_pivot_data["Sort_Key"] = (
+            filtered_pivot_data["Ugur"]
+            .str.extract(r"^(\d+)")  # Extract the number at the beginning
+            .astype(float)           # Convert to numeric for sorting
+        )
+        # filtered_pivot_data = filtered_pivot_data.sort_values("Sort_Key").drop(columns=["Sort_Key"])
+
+        filtered_pivot_data["Sort_Key"] = (
+            filtered_pivot_data["Ugur"]
+            .str.extract(r"^(\d+)")
+            .astype(float)
+        )
+        filtered_pivot_data = filtered_pivot_data.sort_values("Sort_Key").drop(columns=["Sort_Key"])
 
         # Calculate the total higher-educated workers from the filtered data
         total_yb_filtered = filtered_pivot_data["Ý.B. Işgärleriň sany"].sum()
@@ -2542,6 +2607,7 @@ if page == "Bazar":
             filtered_pivot_data["Ý.B. Işgärleriň sany"] / total_yb_filtered
         ) * 100
 
+    
         # Visualization: Pie Chart for Higher-Educated Workers Distribution Across Sectors
         st.write("### Ý.B. Işgärleriň ugurlar boýunça paýlanyşy")
         if not filtered_pivot_data.empty:
@@ -2553,10 +2619,17 @@ if page == "Bazar":
                 labels={"Ugur": "Sector", "Percentage": "Percentage (%)"},
                 height=600
             )
+
+            fig_pie_filtered.update_layout(
+                title_font=dict(family="Times New Roman", size=24),  # Title font style and size
+                legend_font=dict(family="Times New Roman", size=24),  # Legend font style and size
+                font=dict(family="Times New Roman", size=22),  # General font style and size
+            )
             st.plotly_chart(fig_pie_filtered)
         else:
             st.write("No data available for the selected criteria.")
 
+        # Display sorted data for sectors
         st.write("### Ugurlar boýunça Ý.B. işgärler")
         sector_data = filtered_state_data.pivot_table(
             index=["Ugur", "Year"],
@@ -2565,7 +2638,9 @@ if page == "Bazar":
             aggfunc="sum"
         ).reset_index()
 
-        # Drop rows where total workers are NaN or 0
+        # Ensure `Ugur` is sorted numerically for display
+   
+                # Drop rows where total workers are NaN or 0
         sector_data = sector_data.dropna(subset=["Işgärleriň sany"])
         sector_data = sector_data[sector_data["Işgärleriň sany"] > 0]
 
@@ -3316,6 +3391,12 @@ if page == "Bazar çaklama":
         labels={"Category": "Kategoriýa", "Count": "Sany"},
         height=600
     )
+
+    fig_pie.update_layout(
+                title_font=dict(family="Times New Roman", size=24),  # Title font style and size
+                legend_font=dict(family="Times New Roman", size=24),  # Legend font style and size
+                font=dict(family="Times New Roman", size=22),  # General font style and size
+            )
     st.plotly_chart(fig_pie)
 
  
