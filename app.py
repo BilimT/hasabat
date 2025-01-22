@@ -2732,6 +2732,73 @@ if page == "Bazar":
             st.write("No data available for the selected criteria.")
 
     with st.expander("ÝOM tamamlanlaryň seljermesi"):
+        st.write(" ### ÝOM tamamlanlaryň seljermesi")
+        # Multiselect for unique years
+        selected_years = st.multiselect("Ýyl saýlaň      :", options=bazar_df["Year"].unique(), default=bazar_df["Year"].unique())
+
+        # Filter data based on selected years
+        filtered_data = bazar_df[bazar_df["Year"].isin(selected_years)]
+
+        # Further filter data for "Daşary ýurdy tamamlap ykrar edilenler"
+        graduate_data = filtered_data[filtered_data["Variable"] == "Daşary ýurdy tamamlap ykrar edilenler"]
+
+        # Exclude rows where "Ugur" contains "Jemi"
+        graduate_data = graduate_data[~graduate_data["Ugur"].str.contains("Jemi", na=False)]
+
+        # Group by 'Ugur' and calculate sum and percentages
+        grouped_data = graduate_data.groupby("Ugur")["Value"].sum().reset_index()
+        grouped_data['Percentage'] = (grouped_data['Value'] / grouped_data['Value'].sum()) * 100
+
+        # Create Plotly Pie Chart
+        fig_pie = px.pie(
+            grouped_data,
+            names="Ugur",
+            values="Value",
+            title="Ugur boýunça daşary ýurdy tamamlap ykrar edilenleriň paýlanyşy",
+            labels={"Ugur": "Category", "Value": "Count"},
+            height=600
+        )
+
+        # Update layout to change font style and size
+        fig_pie.update_layout(
+            title_font=dict(family="Times New Roman", size=24),  # Title font style and size
+            legend_font=dict(family="Times New Roman", size=24),  # Legend font style and size
+            font=dict(family="Times New Roman", size=22),  # General font style and size
+        )
+
+        # Display the pie chart in Streamlit
+        st.plotly_chart(fig_pie)
+
+
+        graduate_data_local = filtered_data[filtered_data["Variable"] == "ÝOM tamamlanlar"]
+
+        # Exclude rows where "Ugur" contains "Jemi"
+        graduate_data_local = graduate_data_local[~graduate_data_local["Ugur"].str.contains("Jemi", na=False)]
+
+        # Group by 'Ugur' and calculate sum and percentages
+        graduate_data_local = graduate_data_local.groupby("Ugur")["Value"].sum().reset_index()
+        graduate_data_local['Percentage'] = (graduate_data_local['Value'] / graduate_data_local['Value'].sum()) * 100
+
+        # Create Plotly Pie Chart
+        fig_pie = px.pie(
+            graduate_data_local,
+            names="Ugur",
+            values="Value",
+            title="Ugur ÝOM tamamlanlaryň paýlanyşy",
+            labels={"Ugur": "Category", "Value": "Count"},
+            height=600
+        )
+
+        # Update layout to change font style and size
+        fig_pie.update_layout(
+            title_font=dict(family="Times New Roman", size=24),  # Title font style and size
+            legend_font=dict(family="Times New Roman", size=24),  # Legend font style and size
+            font=dict(family="Times New Roman", size=22),  # General font style and size
+        )
+
+        # Display the pie chart in Streamlit
+        st.plotly_chart(fig_pie)
+
         # Filter data for relevant variables
         graduate_data = bazar_df[bazar_df["Variable"].isin(["Daşary ýurdy tamamlap ykrar edilenler", "ÝOM tamamlanlar"])]
 
@@ -2752,7 +2819,7 @@ if page == "Bazar":
         )
 
         # Streamlit UI
-        st.write(" ### ÝOM tamamlanlaryň seljermesi")
+
 
         # Step 1: Sector Selection
         selected_ugurs = st.multiselect(
