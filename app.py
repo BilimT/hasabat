@@ -2810,6 +2810,30 @@ if page == "Bazar":
             aggfunc="sum"
         ).reset_index()
 
+        # Exclude rows with missing values to ensure scatter plot compatibility
+        scatter_data = pivot_data[~pivot_data["Ugur"].str.contains("Jemi", na=False)]
+
+
+        # Create the scatter plot
+        fig_scatter = px.scatter(
+            scatter_data,
+            x="Daşary ýurdy tamamlap ykrar edilenler",
+            y="ÝOM tamamlanlar",
+            color="Ugur",
+            size="Daşary ýurdy tamamlap ykrar edilenler",  # Size of points based on the count of graduated students
+            hover_name="Ugur",
+            title="Daşary ýurdy tamamlap ykrar edilenler - ÝOM tamamlanlar Sepme Diagramma",
+            labels={
+                "Daşary ýurdy tamamlap ykrar edilenler": "Daşary ýurdy tamamlap ykrar edilenler",
+                "ÝOM tamamlanlar": "ÝOM Tamamlanlar",
+                "Ugur": "Ugur"
+            },
+            height=600
+        )
+
+        # Display the plot
+        st.plotly_chart(fig_scatter)
+
         # Melt data for Plotly compatibility
         melted_data = pivot_data.melt(
             id_vars=["Year", "Ugur"],
