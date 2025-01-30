@@ -1645,16 +1645,14 @@ if page == "Kwota":
 
 
 
-        # Create a reusable pie chart function
         def create_pie_chart(data, group_by, title):
             color_mapping = {
-                "BŽ": "#08519C",  # Soft teal blue
-                "Tölegli": "#9ECAE1",  # Muted navy blue
-                "Hünärmen": "#9ECAE1",  # Light blue
-                "Bakalawr": "#08519C"   # Deep navy
+                "BŽ": "#0056B3", 
+                "Tölegli": "#87CEEB", 
+                "Hünärmen": "#0056B3", 
+                "Bakalawr": "#87CEEB" 
             }
 
-            # Group data and calculate percentages
             grouped_data = data.groupby(group_by)['Kwota'].sum().reset_index()
             grouped_data['Percentage'] = (grouped_data['Kwota'] / grouped_data['Kwota'].sum()) * 100
 
